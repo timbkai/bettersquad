@@ -23,7 +23,7 @@ export default function PlayerCard({ player }: PlayerCardProps) {
       ? "border-amber-500/30 hover:border-amber-500/60"
       : "border-white/8 hover:border-emerald-500/30";
 
-  const hoooperColor =
+  const hooperColor =
     player.hooper.total <= 14
       ? "text-emerald-400"
       : player.hooper.total <= 20
@@ -68,7 +68,10 @@ export default function PlayerCard({ player }: PlayerCardProps) {
           </div>
           <div className="text-right">
             <div className="text-xs text-slate-500 mb-0.5">Hooper</div>
-            <div className={`text-lg font-bold ${hoooperColor}`}>{player.hooper.total}<span className="text-xs text-slate-600">/28</span></div>
+            <div className={`text-lg font-bold ${hooperColor}`}>{player.hooper.total}<span className="text-xs text-slate-600">/28</span></div>
+            <div className={`text-[10px] ${hooperColor}`}>
+              {player.hooper.total <= 14 ? "Erholt" : player.hooper.total <= 20 ? "Mäßig" : "Erschöpft"}
+            </div>
           </div>
         </div>
 

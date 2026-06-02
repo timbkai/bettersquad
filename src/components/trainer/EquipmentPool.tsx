@@ -12,7 +12,11 @@ export default function EquipmentPool() {
     <div className="bg-slate-900/60 border border-white/8 rounded-xl p-5">
       <div className="text-sm font-semibold text-slate-300 mb-4 flex items-center gap-2">
         <span>Equipment Pool</span>
-        <span className="text-xs text-slate-500">· QR-Checkout aktiv</span>
+        <span className="flex items-center gap-1.5 text-xs text-emerald-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          QR-Checkout aktiv
+        </span>
+        <span className="ml-auto text-[11px] text-slate-600">vor 3 Min.</span>
       </div>
 
       <div className="space-y-4">

@@ -1,5 +1,5 @@
 export type RiskLevel = "green" | "yellow" | "red";
-export type Position = "TW" | "IV" | "LA" | "RA" | "DM" | "ZM" | "OM" | "LA" | "RA" | "ST";
+export type Position = "TW" | "IV" | "LA" | "RA" | "DM" | "ZM" | "OM" | "ST";
 export type Gender = "male" | "female";
 
 export interface DailyLoad {
@@ -185,12 +185,22 @@ export const clubInfo = {
   },
 };
 
+// Realistic 21-day squad load curve: steady base → spike around matchday block (day 10-14) → recovery
+const ACWR_TREND = [
+  1.02, 1.05, 1.08, 1.10, 1.12, 1.15, 1.18, 1.22, 1.28, 1.35,
+  1.42, 1.48, 1.45, 1.38, 1.30, 1.22, 1.15, 1.10, 1.07, 1.05, 1.03,
+];
+const MAX_ACWR_TREND = [
+  1.15, 1.18, 1.22, 1.25, 1.28, 1.32, 1.35, 1.40, 1.46, 1.52,
+  1.58, 1.62, 1.59, 1.52, 1.44, 1.36, 1.28, 1.22, 1.18, 1.15, 1.12,
+];
+
 export const squadACWRHistory = (() => {
   const dates = generateDates(21);
-  return dates.map((date) => ({
+  return dates.map((date, i) => ({
     date,
-    avgACWR: parseFloat((1.0 + Math.random() * 0.6).toFixed(2)),
-    maxACWR: parseFloat((1.2 + Math.random() * 0.5).toFixed(2)),
+    avgACWR: ACWR_TREND[i],
+    maxACWR: MAX_ACWR_TREND[i],
   }));
 })();
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Users, AlertTriangle, CheckCircle, Clock, TrendingUp } from "lucide-react";
+import { AlertTriangle, CheckCircle, Clock, TrendingUp } from "lucide-react";
 import { players, squadACWRHistory, aiInsights, clubInfo } from "@/data/mockData";
 import TrainerNav from "@/components/shared/TrainerNav";
 import PlayerCard from "@/components/trainer/PlayerCard";
@@ -12,7 +12,7 @@ import EquipmentPool from "@/components/trainer/EquipmentPool";
 type Filter = "all" | "risk" | "fit";
 
 export default function TrainerDashboard() {
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>("risk");
 
   const redCount = players.filter((p) => p.riskLevel === "red").length;
   const yellowCount = players.filter((p) => p.riskLevel === "yellow").length;
@@ -25,6 +25,13 @@ export default function TrainerDashboard() {
   });
 
   const avgACWR = (players.reduce((s, p) => s + p.acwr, 0) / players.length).toFixed(2);
+  const redPlayerNames = players
+    .filter((p) => p.riskLevel === "red")
+    .map((p) => {
+      const parts = p.name.split(" ");
+      return `${parts[0]} ${parts[1][0]}.`;
+    })
+    .join(", ");
 
   return (
     <div className="min-h-screen bg-[#0a0f1a]">
@@ -51,7 +58,7 @@ export default function TrainerDashboard() {
         {/* KPI Row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {[
-            { label: "Aktive Spieler", value: players.length, icon: Users, color: "text-slate-300" },
+            { label: "Ø Squad-ACWR", value: avgACWR, icon: TrendingUp, color: "text-slate-300" },
             { label: "Fit (Grün)", value: fitCount, icon: CheckCircle, color: "text-emerald-400" },
             { label: "Vorsicht (Gelb)", value: yellowCount, icon: AlertTriangle, color: "text-amber-400" },
             { label: "Risiko (Rot)", value: redCount, icon: AlertTriangle, color: "text-red-400" },
@@ -145,7 +152,7 @@ export default function TrainerDashboard() {
                   <span className="font-semibold text-white">Taktik + Regeneration</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Pause: Luis M., Moritz K.</span>
+                  <span className="text-slate-400">Pause: {redPlayerNames}</span>
                   <span className="font-semibold text-red-400">Ruhe</span>
                 </div>
                 <div className="flex justify-between">

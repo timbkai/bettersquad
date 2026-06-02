@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, Calendar, Settings } from "lucide-react";
+import { LayoutDashboard, Calendar } from "lucide-react";
 import BetterSquadLogo from "./BetterSquadLogo";
 
 const navItems = [

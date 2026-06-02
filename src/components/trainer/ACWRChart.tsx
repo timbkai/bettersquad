@@ -59,7 +59,7 @@ export default function ACWRChart({ data, title, showLegend = false }: ACWRChart
       {title && <div className="text-sm font-semibold text-slate-300 mb-3">{title}</div>}
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={formatted} margin={{ top: 8, right: 8, bottom: 0, left: -20 }}>
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
           {/* Warning zone */}
           <ReferenceArea y1={1.3} y2={1.5} fill="rgba(251,191,36,0.08)" />
           {/* Danger zone */}
