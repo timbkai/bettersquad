@@ -2,86 +2,96 @@
 
 import Link from "next/link";
 import { Player } from "@/data/mockData";
-import StatusBadge from "@/components/shared/StatusBadge";
+import { getTrainingDecision } from "@/lib/trainingDecision";
 
 interface PlayerCardProps {
   player: Player;
 }
 
 export default function PlayerCard({ player }: PlayerCardProps) {
+  const decision = getTrainingDecision(player);
+
   const acwrColor =
     player.riskLevel === "red"
-      ? "text-red-400"
+      ? "text-rose-600"
       : player.riskLevel === "yellow"
-      ? "text-amber-400"
-      : "text-emerald-400";
+      ? "text-amber-600"
+      : "text-emerald-600";
 
   const borderColor =
-    player.riskLevel === "red"
-      ? "border-red-500/30 hover:border-red-500/60"
+    player.injured || player.riskLevel === "red"
+      ? "border-l-rose-500"
       : player.riskLevel === "yellow"
-      ? "border-amber-500/30 hover:border-amber-500/60"
-      : "border-white/8 hover:border-emerald-500/30";
+      ? "border-l-amber-400"
+      : "border-l-emerald-500";
+
+  const avatarBg =
+    player.riskLevel === "red"
+      ? "bg-rose-50 text-rose-700"
+      : player.riskLevel === "yellow"
+      ? "bg-amber-50 text-amber-700"
+      : "bg-emerald-50 text-emerald-700";
 
   const hooperColor =
     player.hooper.total <= 14
-      ? "text-emerald-400"
+      ? "text-emerald-600"
       : player.hooper.total <= 20
-      ? "text-amber-400"
-      : "text-red-400";
+      ? "text-amber-600"
+      : "text-rose-600";
+
+  const riskBadge =
+    player.riskLevel === "red"
+      ? "bg-rose-50 text-rose-700 ring-rose-100"
+      : player.riskLevel === "yellow"
+      ? "bg-amber-50 text-amber-700 ring-amber-100"
+      : "bg-emerald-50 text-emerald-700 ring-emerald-100";
 
   return (
     <Link href={`/trainer/player/${player.id}`}>
       <div
-        className={`bg-slate-900/60 border ${borderColor} rounded-xl p-4 cursor-pointer transition-all hover:bg-slate-900/80 hover:scale-[1.02] group`}
+        className={`min-h-[154px] cursor-pointer rounded-lg border border-slate-200 border-l-4 bg-white p-3.5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md ${borderColor}`}
       >
-        {/* Top row */}
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-2">
-            {/* Avatar */}
-            <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm text-white ${
-              player.riskLevel === "red"
-                ? "bg-red-500/20"
-                : player.riskLevel === "yellow"
-                ? "bg-amber-500/20"
-                : "bg-emerald-500/20"
-            }`}>
+        <div className="mb-3 flex items-start justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2">
+            <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-black ${avatarBg}`}>
               {player.name.split(" ").map((n) => n[0]).join("")}
             </div>
-            <div>
-              <div className="text-sm font-semibold text-white leading-tight">{player.name}</div>
-              <div className="text-xs text-slate-500">#{player.number} · {player.position}</div>
+            <div className="min-w-0">
+              <div className="truncate text-sm font-bold leading-tight text-slate-950">{player.name}</div>
+              <div className="text-xs text-slate-500">
+                #{player.number} · {player.position} · Baseline {player.baselineDays}T
+              </div>
             </div>
           </div>
-          {player.gender === "female" && (
-            <span className="text-[10px] px-1.5 py-0.5 bg-purple-500/15 text-purple-400 border border-purple-500/30 rounded-full">
-              W
+          {player.injured && (
+            <span className="rounded-full border border-rose-100 bg-rose-50 px-1.5 py-0.5 text-[10px] font-semibold text-rose-700">
+              Verletzt
             </span>
           )}
         </div>
 
-        {/* ACWR */}
-        <div className="flex items-end justify-between mt-2">
+        <div className="mt-2 flex items-end justify-between">
           <div>
-            <div className="text-xs text-slate-500 mb-0.5">ACWR</div>
+            <div className="mb-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400">ACWR</div>
             <div className={`text-2xl font-black ${acwrColor}`}>{player.acwr.toFixed(2)}</div>
           </div>
           <div className="text-right">
-            <div className="text-xs text-slate-500 mb-0.5">Hooper</div>
-            <div className={`text-lg font-bold ${hooperColor}`}>{player.hooper.total}<span className="text-xs text-slate-600">/28</span></div>
+            <div className="mb-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400">Hooper</div>
+            <div className={`text-lg font-bold ${hooperColor}`}>
+              {player.hooper.total}<span className="text-xs text-slate-400">/28</span>
+            </div>
             <div className={`text-[10px] ${hooperColor}`}>
               {player.hooper.total <= 14 ? "Erholt" : player.hooper.total <= 20 ? "Mäßig" : "Erschöpft"}
             </div>
           </div>
         </div>
 
-        {/* ACWR bar */}
         <div className="mt-3">
-          <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+          <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
             <div
               className={`h-full rounded-full transition-all ${
                 player.riskLevel === "red"
-                  ? "bg-red-500"
+                  ? "bg-rose-500"
                   : player.riskLevel === "yellow"
                   ? "bg-amber-400"
                   : "bg-emerald-500"
@@ -89,16 +99,18 @@ export default function PlayerCard({ player }: PlayerCardProps) {
               style={{ width: `${Math.min((player.acwr / 2) * 100, 100)}%` }}
             />
           </div>
-          <div className="flex justify-between text-[10px] text-slate-600 mt-0.5">
+          <div className="mt-0.5 flex justify-between text-[10px] text-slate-400">
             <span>0</span>
-            <span className="text-amber-600">1.3</span>
-            <span className="text-red-600">1.5</span>
+            <span className="text-amber-500/70">1.3</span>
+            <span className="text-rose-500/70">1.5</span>
             <span>2.0</span>
           </div>
         </div>
 
         <div className="mt-3">
-          <StatusBadge risk={player.riskLevel} size="sm" />
+          <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ring-1 ${riskBadge}`}>
+            {decision.label}
+          </span>
         </div>
       </div>
     </Link>

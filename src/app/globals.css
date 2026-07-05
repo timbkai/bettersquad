@@ -33,6 +33,12 @@ body {
     backdrop-filter: blur(12px);
   }
 
+  .card-light {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.06);
+  }
+
   .risk-green {
     background: rgba(16, 185, 129, 0.15);
     border-color: rgba(16, 185, 129, 0.4);
@@ -57,23 +63,18 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0f1a;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #cbd5e1;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #94a3b8;
 }
 
-/* Recharts custom */
-.recharts-cartesian-grid-horizontal line,
-.recharts-cartesian-grid-vertical line {
-  stroke: rgba(255, 255, 255, 0.06);
-}
-
+/* Recharts */
 .recharts-text {
-  fill: #94a3b8;
+  fill: #64748b;
   font-size: 12px;
 }

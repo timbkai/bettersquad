@@ -39,38 +39,60 @@ export interface Player {
   hooper: HooperScore;
   injured: boolean;
   todayAvailable: boolean;
+  cycleOptIn: boolean;
+  baselineDays: number;
   acwrHistory: { date: string; acwr: number }[];
 }
 
+export const demoContext = {
+  today: "2026-07-05",
+  label: "So, 05.07.2026",
+};
+
 function generateDates(daysBack: number): string[] {
+  const anchor = new Date(`${demoContext.today}T12:00:00.000Z`);
   return Array.from({ length: daysBack }, (_, i) => {
-    const d = new Date();
+    const d = new Date(anchor);
     d.setDate(d.getDate() - (daysBack - 1 - i));
     return d.toISOString().split("T")[0];
   });
 }
 
-function generateLoads(days: number, baseLoad: number): DailyLoad[] {
+function seededRandom(seed: number): number {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+function seedFromString(value: string): number {
+  return value.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+}
+
+function generateLoads(days: number, baseLoad: number, seed: number): DailyLoad[] {
   const dates = generateDates(days);
   return dates.map((date, i) => {
     const rest = i % 7 === 6; // Sunday = rest
-    const load = rest ? 0 : Math.round(baseLoad * (0.7 + Math.random() * 0.6));
+    const loadNoise = seededRandom(seed + i * 17);
+    const distanceNoise = seededRandom(seed + i * 23);
+    const sprintNoise = seededRandom(seed + i * 31);
+    const speedNoise = seededRandom(seed + i * 43);
+    const hiRunNoise = seededRandom(seed + i * 59);
+    const load = rest ? 0 : Math.round(baseLoad * (0.7 + loadNoise * 0.6));
     return {
       date,
       load,
-      distance: rest ? 0 : parseFloat((6 + Math.random() * 5).toFixed(1)),
-      sprints: rest ? 0 : Math.floor(8 + Math.random() * 20),
-      maxSpeed: rest ? 0 : parseFloat((24 + Math.random() * 10).toFixed(1)),
-      hiRuns: rest ? 0 : Math.floor(15 + Math.random() * 30),
+      distance: rest ? 0 : parseFloat((6 + distanceNoise * 5).toFixed(1)),
+      sprints: rest ? 0 : Math.floor(8 + sprintNoise * 20),
+      maxSpeed: rest ? 0 : parseFloat((24 + speedNoise * 10).toFixed(1)),
+      hiRuns: rest ? 0 : Math.floor(15 + hiRunNoise * 30),
     };
   });
 }
 
-function generateHRV(days: number, base: number): HRVEntry[] {
+function generateHRV(days: number, base: number, seed: number): HRVEntry[] {
   const dates = generateDates(days);
   let current = base;
-  return dates.map((date) => {
-    current = Math.max(45, Math.min(100, current + (Math.random() - 0.5) * 8));
+  return dates.map((date, i) => {
+    current = Math.max(45, Math.min(100, current + (seededRandom(seed + i * 37) - 0.5) * 8));
     return { date, hrv: Math.round(current) };
   });
 }
@@ -111,7 +133,8 @@ function makePlayer(
   hooperValues: [number, number, number, number],
   injured = false
 ): Player {
-  const loads = generateLoads(35, baseLoad);
+  const seed = seedFromString(id);
+  const loads = generateLoads(35, baseLoad, seed);
   const acwr = calcACWR(loads);
   const hooperTotal = hooperValues.reduce((a, b) => a + b, 0);
   return {
@@ -124,49 +147,51 @@ function makePlayer(
     acwr,
     riskLevel: injured ? "red" : acwrToRisk(acwr),
     dailyLoads: loads,
-    hrv: generateHRV(14, 62 + Math.floor(Math.random() * 18)),
+    hrv: generateHRV(14, 62 + Math.floor(seededRandom(seed + 101) * 18), seed + 200),
     hooper: {
       sleep: hooperValues[0],
       soreness: hooperValues[1],
       fatigue: hooperValues[2],
       mood: hooperValues[3],
       total: hooperTotal,
-      date: new Date().toISOString().split("T")[0],
+      date: demoContext.today,
     },
     injured,
     todayAvailable: !injured,
+    cycleOptIn: seededRandom(seed + 303) > 0.35,
+    baselineDays: 42 + Math.floor(seededRandom(seed + 404) * 49),
     acwrHistory: generateACWRHistory(loads),
   };
 }
 
 export const players: Player[] = [
-  makePlayer("p1", "Lukas Becker", 1, "TW", "male", 24, 55, [2, 2, 2, 2]),
-  makePlayer("p2", "Jonas Wagner", 4, "IV", "male", 22, 80, [2, 3, 3, 2]),
-  makePlayer("p3", "Maximilian Schulz", 5, "IV", "male", 26, 75, [3, 4, 3, 3]),
-  makePlayer("p4", "Tim Hoffmann", 3, "LA", "male", 21, 90, [4, 5, 4, 4]),
-  makePlayer("p5", "Felix Braun", 2, "RA", "male", 23, 85, [2, 2, 3, 2]),
-  makePlayer("p6", "Luis Müller", 8, "DM", "male", 25, 105, [5, 6, 5, 4]),
-  makePlayer("p7", "Noah Fischer", 6, "ZM", "male", 24, 95, [3, 3, 4, 3]),
-  makePlayer("p8", "Elias Weber", 10, "OM", "male", 27, 110, [4, 5, 5, 4]),
-  makePlayer("p9", "Leon Schmidt", 11, "LA", "male", 20, 88, [2, 3, 2, 2]),
-  makePlayer("p10", "Finn Richter", 7, "RA", "male", 22, 92, [3, 4, 4, 3]),
-  makePlayer("p11", "Moritz Krause", 9, "ST", "male", 28, 120, [6, 6, 6, 5], false),
-  makePlayer("p12", "David Klein", 18, "ST", "male", 23, 78, [2, 2, 2, 3]),
-  makePlayer("p13", "Jan Vogel", 14, "ZM", "male", 26, 82, [3, 3, 3, 3]),
-  makePlayer("p14", "Paul Hartmann", 17, "IV", "male", 24, 70, [2, 2, 3, 2]),
-  makePlayer("p15", "Erik König", 13, "LA", "male", 21, 76, [2, 3, 2, 2]),
+  makePlayer("p1", "Emma Fischer", 1, "TW", "female", 24, 55, [2, 2, 2, 2]),
+  makePlayer("p2", "Lena Wagner", 4, "IV", "female", 22, 80, [2, 3, 3, 2]),
+  makePlayer("p3", "Mia Schulz", 5, "IV", "female", 26, 75, [3, 4, 3, 3]),
+  makePlayer("p4", "Aylin Yıldız", 3, "LA", "female", 21, 90, [4, 5, 4, 4], true),
+  makePlayer("p5", "Lisa Braun", 2, "RA", "female", 23, 85, [2, 2, 3, 2]),
+  makePlayer("p6", "Luisa Müller", 8, "DM", "female", 25, 105, [5, 6, 5, 4]),
+  makePlayer("p7", "Naomi Asante", 6, "ZM", "female", 24, 95, [3, 3, 4, 3]),
+  makePlayer("p8", "Elena Weber", 10, "OM", "female", 27, 110, [4, 5, 5, 4]),
+  makePlayer("p9", "Lea Schmidt", 11, "LA", "female", 20, 88, [2, 3, 2, 2]),
+  makePlayer("p10", "Fiona Richter", 7, "RA", "female", 22, 92, [3, 4, 4, 3]),
+  makePlayer("p11", "Amira Hassan", 9, "ST", "female", 28, 120, [6, 6, 6, 5], false),
+  makePlayer("p12", "Daria Klein", 18, "ST", "female", 23, 78, [2, 2, 2, 3]),
+  makePlayer("p13", "Antonia Lefebvre", 14, "ZM", "female", 26, 82, [3, 3, 3, 3]),
+  makePlayer("p14", "Paula Hartmann", 17, "IV", "female", 24, 70, [2, 2, 3, 2]),
+  makePlayer("p15", "Erika König", 13, "LA", "female", 21, 76, [2, 3, 2, 2]),
   makePlayer("p16", "Anna Berger", 10, "OM", "female", 23, 85, [2, 2, 3, 2]),
   makePlayer("p17", "Laura Schneider", 7, "ST", "female", 21, 79, [3, 3, 3, 3]),
   makePlayer("p18", "Sophie Zimmermann", 5, "IV", "female", 25, 72, [2, 2, 2, 2]),
-  makePlayer("p19", "Lena Bauer", 4, "LA", "female", 22, 88, [4, 4, 4, 4]),
+  makePlayer("p19", "Sofia Martínez", 4, "LA", "female", 22, 88, [4, 4, 4, 4]),
   makePlayer("p20", "Mia Wolf", 1, "TW", "female", 24, 58, [2, 2, 2, 3]),
 ];
 
 // Force some specific ACWR values for demo realism
-players[5].acwr = 1.54; players[5].riskLevel = "red";   // Luis Müller – red
-players[7].acwr = 1.48; players[7].riskLevel = "yellow"; // Elias Weber – yellow
-players[10].acwr = 1.51; players[10].riskLevel = "red";  // Moritz Krause – red
-players[18].acwr = 1.38; players[18].riskLevel = "yellow"; // Lena Bauer – yellow
+players[5].acwr = 1.54; players[5].riskLevel = "red";    // Luisa Müller – red
+players[7].acwr = 1.48; players[7].riskLevel = "yellow"; // Elena Weber – yellow
+players[10].acwr = 1.51; players[10].riskLevel = "red";  // Amira Hassan – red
+players[18].acwr = 1.38; players[18].riskLevel = "yellow"; // Sofia Martínez – yellow
 
 export const equipmentPool = {
   gpsTrackers: { total: 25, available: 22, inMaintenance: 3 },
@@ -175,13 +200,18 @@ export const equipmentPool = {
 };
 
 export const clubInfo = {
-  name: "FC Viktoria Köln",
-  team: "Regionalliga West",
+  name: "FC Viktoria Köln (Frauen)",
+  team: "Frauenabteilung · Regionalliga West",
   season: "2025/26",
   nextSession: {
-    date: "Morgen, 10:00 Uhr",
+    date: "Mo, 06.07.2026 · 10:00 Uhr",
     type: "Taktiktraining",
     location: "Kunstrasen A",
+  },
+  nextMatch: {
+    date: "Sa, 11.07.2026",
+    opponent: "SV Rödinghausen",
+    venue: "Heimspiel",
   },
 };
 
@@ -208,16 +238,16 @@ export const aiInsights = [
   {
     id: "ins1",
     severity: "red" as RiskLevel,
-    text: "Luis Müller (ACWR 1.54) und Moritz Krause (ACWR 1.51) überschreiten die kritische Schwelle. Nominierung für nächste Einheit überdenken.",
+    text: "Luisa Müller und Amira Hassan liegen oberhalb ihrer Belastungsbaseline. Für beide heute keine Spielform mit Kontakt- oder Sprintspitzen einplanen.",
   },
   {
     id: "ins2",
     severity: "yellow" as RiskLevel,
-    text: "Elias Weber & Lena Bauer im Gelbbereich (ACWR >1.3). Trainingsintensität um 20% reduzieren – Fokus auf Regeneration.",
+    text: "Elena Weber und Sofia Martínez sind reduziert einsetzbar. Technische Rollen und Pausensteuerung sind sinnvoller als wiederholte Tiefensprints.",
   },
   {
     id: "ins3",
     severity: "green" as RiskLevel,
-    text: "Squad-Gesamtbelastung liegt im optimalen Bereich. Planmäßiges High-Intensity-Training für Montag empfohlen.",
+    text: "Die verfügbare Gruppe erlaubt einen taktischen 8-gegen-8-Block. Sprintkorridore rechts dosieren, links primär Raumaufteilung und Pressing-Abstände coachen.",
   },
 ];

@@ -3,12 +3,18 @@
 interface LogoProps {
   size?: "sm" | "md" | "lg";
   showText?: boolean;
+  tone?: "light" | "dark";
 }
 
-export default function BetterSquadLogo({ size = "md", showText = true }: LogoProps) {
+export default function BetterSquadLogo({
+  size = "md",
+  showText = true,
+  tone = "light",
+}: LogoProps) {
   const dims = { sm: 24, md: 32, lg: 48 };
   const px = dims[size];
-  const textSize = { sm: "text-sm", md: "text-lg", lg: "text-3xl" };
+  const textColor = tone === "dark" ? "text-slate-950" : "text-white";
+  const accentColor = "text-emerald-400";
 
   return (
     <div className="flex items-center gap-2">
@@ -29,8 +35,8 @@ export default function BetterSquadLogo({ size = "md", showText = true }: LogoPr
         </span>
       </div>
       {showText && (
-        <span className={`font-black tracking-tight text-white ${textSize[size]}`}>
-          Better<span className="text-emerald-400">Squad</span>
+        <span className={`font-black tracking-tight ${textColor} ${size === "sm" ? "text-sm" : "text-lg"}`}>
+          Better<span className={accentColor}>Squad</span>
         </span>
       )}
     </div>

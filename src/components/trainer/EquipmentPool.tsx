@@ -1,72 +1,60 @@
-import { Wifi, Heart } from "lucide-react";
+import { HeartPulse, RadioTower } from "lucide-react";
 import { equipmentPool } from "@/data/mockData";
 
 export default function EquipmentPool() {
   const gps = equipmentPool.gpsTrackers;
-  const polar = equipmentPool.polarH10;
+  const chest = equipmentPool.polarH10;
 
   const GPSPct = Math.round((gps.available / gps.total) * 100);
-  const PolarPct = Math.round((polar.available / polar.total) * 100);
+  const ChestPct = Math.round((chest.available / chest.total) * 100);
 
   return (
-    <div className="bg-slate-900/60 border border-white/8 rounded-xl p-5">
-      <div className="text-sm font-semibold text-slate-300 mb-4 flex items-center gap-2">
-        <span>Equipment Pool</span>
-        <span className="flex items-center gap-1.5 text-xs text-emerald-400">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          QR-Checkout aktiv
+    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="mb-4 flex items-center gap-2 text-sm font-bold text-slate-950">
+        <span>Hardware-Pool</span>
+        <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-700">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+          Tracker-Dock aktiv
         </span>
-        <span className="ml-auto text-[11px] text-slate-600">vor 3 Min.</span>
+        <span className="ml-auto text-[11px] font-medium text-slate-400">vor 3 Min.</span>
       </div>
 
       <div className="space-y-4">
-        {/* GPS Tracker */}
         <div>
-          <div className="flex items-center justify-between mb-1.5">
+          <div className="mb-1.5 flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm">
-              <Wifi className="w-4 h-4 text-emerald-400" />
-              <span className="text-slate-300">GPS-Tracker</span>
+              <RadioTower className="h-4 w-4 text-sky-600" />
+              <span className="font-medium text-slate-700">GPS/GNSS-Tracker</span>
             </div>
-            <div className="text-sm font-bold text-white">
+            <div className="text-sm font-black text-slate-950">
               {gps.available}
-              <span className="text-slate-500 font-normal">/{gps.total}</span>
+              <span className="font-normal text-slate-400">/{gps.total}</span>
             </div>
           </div>
-          <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-emerald-500 rounded-full"
-              style={{ width: `${GPSPct}%` }}
-            />
+          <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+            <div className="h-full rounded-full bg-sky-500" style={{ width: `${GPSPct}%` }} />
           </div>
-          <div className="text-xs text-slate-500 mt-1">
-            {gps.inMaintenance} in Wartung
-          </div>
+          <div className="mt-1 text-xs text-slate-500">{gps.inMaintenance} in Wartung</div>
         </div>
 
-        {/* Polar H10 */}
         <div>
-          <div className="flex items-center justify-between mb-1.5">
+          <div className="mb-1.5 flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm">
-              <Heart className="w-4 h-4 text-red-400" />
-              <span className="text-slate-300">Polar H10 Gurte</span>
+              <HeartPulse className="h-4 w-4 text-rose-600" />
+              <span className="font-medium text-slate-700">Magene H603-Brustgurte</span>
             </div>
-            <div className="text-sm font-bold text-white">
-              {polar.available}
-              <span className="text-slate-500 font-normal">/{polar.total}</span>
+            <div className="text-sm font-black text-slate-950">
+              {chest.available}
+              <span className="font-normal text-slate-400">/{chest.total}</span>
             </div>
           </div>
-          <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-red-400 rounded-full"
-              style={{ width: `${PolarPct}%` }}
-            />
+          <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+            <div className="h-full rounded-full bg-rose-500" style={{ width: `${ChestPct}%` }} />
           </div>
-          <div className="text-xs text-slate-500 mt-1">
-            {polar.inMaintenance} in Wartung
-          </div>
+          <div className="mt-1 text-xs text-slate-500">{chest.inMaintenance} in Wartung</div>
         </div>
 
-        <div className="pt-2 border-t border-white/6 text-xs text-slate-500">
+        <div className="border-t border-slate-100 pt-2 text-xs text-slate-500">
           {equipmentPool.replacementBands} Ersatzbänder verfügbar
         </div>
       </div>

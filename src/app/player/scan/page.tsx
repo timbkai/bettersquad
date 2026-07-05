@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle, Wifi, Heart, ChevronRight } from "lucide-react";
+import { CheckCircle, Wifi, Heart } from "lucide-react";
 
 type ScanState = "idle" | "scanning" | "assigned";
 

@@ -9,24 +9,24 @@ interface AIInsightCardProps {
 const config = {
   red: {
     icon: AlertTriangle,
-    bg: "bg-red-500/10 border-red-500/25",
-    iconColor: "text-red-400",
+    bg: "bg-[#251426] border-rose-500/25",
+    iconColor: "text-rose-300",
     label: "Kritisch",
-    labelBg: "bg-red-500/20 text-red-400",
+    labelBg: "bg-rose-500/15 text-rose-200",
   },
   yellow: {
     icon: Info,
-    bg: "bg-amber-500/10 border-amber-500/25",
-    iconColor: "text-amber-400",
+    bg: "bg-[#211b2e] border-amber-400/25",
+    iconColor: "text-amber-300",
     label: "Warnung",
-    labelBg: "bg-amber-500/20 text-amber-400",
+    labelBg: "bg-amber-400/15 text-amber-200",
   },
   green: {
     icon: CheckCircle,
-    bg: "bg-emerald-500/10 border-emerald-500/25",
-    iconColor: "text-emerald-400",
+    bg: "bg-[#13263a] border-sky-400/20",
+    iconColor: "text-sky-300",
     label: "Optimal",
-    labelBg: "bg-emerald-500/20 text-emerald-400",
+    labelBg: "bg-sky-400/15 text-sky-200",
   },
 };
 
@@ -35,15 +35,15 @@ export default function AIInsightCard({ severity, text }: AIInsightCardProps) {
   const Icon = c.icon;
 
   return (
-    <div className={`flex items-start gap-3 border rounded-xl p-4 ${c.bg}`}>
-      <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${c.iconColor}`} />
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className={`text-[11px] font-semibold px-1.5 py-0.5 rounded-full ${c.labelBg}`}>
-            KI · {c.label}
+    <div className={`flex items-start gap-3 rounded-lg border p-3.5 ${c.bg}`}>
+      <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${c.iconColor}`} />
+      <div className="min-w-0 flex-1">
+        <div className="mb-1 flex items-center gap-2">
+          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${c.labelBg}`}>
+            Coach · {c.label}
           </span>
         </div>
-        <p className="text-sm text-slate-300 leading-relaxed">{text}</p>
+        <p className="text-sm leading-relaxed text-slate-200">{text}</p>
       </div>
     </div>
   );
